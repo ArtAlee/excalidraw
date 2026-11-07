@@ -137,7 +137,8 @@ const lazyChunksPlugin = (
 
 export default defineConfig(({ mode }) => {
   // To load .env variables
-  const envVars = loadEnv(mode, `../`);
+  const envVars = { ...loadEnv(mode, `../`), ...process.env };
+  const selfHosted = envVars.VITE_APP_SELF_HOSTED === "true";
   // mermaid (+ its many deps & per-diagram chunks) is lazy-loaded and large,
   // so we don't precache it (the app caches it once the TTD dialog is opened,
   // see `cacheMermaidChunks`). Populated at build time by `lazyChunksPlugin`.
@@ -148,6 +149,11 @@ export default defineConfig(({ mode }) => {
       port: Number(envVars.VITE_APP_PORT || 3000),
       // open the browser
       open: true,
+      proxy: selfHosted
+        ? {
+            "/api": "http://127.0.0.1:3001",
+          }
+        : undefined,
     },
     // We need to specify the envDir since now there are no
     //more located in parallel with the vite.config.ts file but in parent dir
@@ -297,8 +303,9 @@ export default defineConfig(({ mode }) => {
         },
       }),
       svgrPlugin(),
-      ViteEjsPlugin(),
+      ViteEjsPlugin({ SELF_HOSTED: selfHosted }),
       VitePWA({
+        disable: selfHosted,
         registerType: "autoUpdate",
         devOptions: {
           /* set this flag to true to enable in Development mode */
@@ -486,6 +493,7 @@ export default defineConfig(({ mode }) => {
       }),
       createHtmlPlugin({
         minify: true,
+        inject: { data: { SELF_HOSTED: selfHosted } },
       }),
     ],
     publicDir: "../public",

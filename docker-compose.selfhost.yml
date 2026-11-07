@@ -1,0 +1,24 @@
+services:
+  workspace:
+    image: excalidraw-workspace:latest
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+    restart: unless-stopped
+    init: true
+    environment:
+      APP_ORIGIN: ${APP_ORIGIN:?Set APP_ORIGIN}
+      TELEGRAM_CLIENT_ID: ${TELEGRAM_CLIENT_ID:-}
+      TELEGRAM_CLIENT_SECRET: ${TELEGRAM_CLIENT_SECRET:-}
+      TELEGRAM_ALLOWED_IDS: ${TELEGRAM_ALLOWED_IDS:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_ALLOWED_EMAILS: ${GOOGLE_ALLOWED_EMAILS:-}
+      WORKSPACE_LEGACY_OWNER_ID: ${WORKSPACE_LEGACY_OWNER_ID:-}
+    volumes:
+      - workspace-data:/data
+    ports:
+      - "127.0.0.1:3000:3000"
+
+volumes:
+  workspace-data:

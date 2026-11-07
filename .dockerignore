@@ -9,6 +9,8 @@
 !public/
 !packages/
 !scripts/
+!server/
+!deploy/
 !tsconfig.json
 !yarn.lock
 
@@ -17,3 +19,7 @@
 **/build
 **/dist
 **/node_modules
+
+**/*.sqlite
+**/*.sqlite-*
+deploy/selfhost.env
